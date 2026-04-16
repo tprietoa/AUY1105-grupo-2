@@ -46,10 +46,17 @@ jobs:
         run: terraform validate
         working-directory: ./terraform
 
-      #  Generar Plan en formato JSON para OPA
+# Generar Plan en formato JSON para OPA (SIN CONEXIÓN A AWS)
       - name: Terraform Plan
+        env:
+          AWS_ACCESS_KEY_ID: mock_access_key
+          AWS_SECRET_ACCESS_KEY: mock_secret_key
+          AWS_REGION: us-east-1
         run: |
-          terraform plan -out=tfplan
+          # Generamos el plan basándonos solo en el código local
+          terraform plan -out=tfplan -refresh=false
+          
+          # Convertimos ese plan a JSON para que OPA pueda leerlo
           terraform show -json tfplan > tfplan.json
         working-directory: ./terraform
 
