@@ -45,3 +45,21 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
         working-directory: ./terraform
+        
+     # Generar Plan en formato JSON para OPA
+      - name: Terraform Plan
+        run: |
+          terraform plan -out=tfplan
+          terraform show -json tfplan > tfplan.json
+        working-directory: ./terraform
+
+      #  Instalar OPA
+      - name: Setup OPA
+        uses: open-policy-agent/setup-opa@v2
+        with:
+          version: latest
+
+      #  Ejecutar evaluación de políticas OPA
+      - name: Run OPA Check
+        run: |
+          opa eval -i terraform/tfplan.json -d opa/policies.rego "data.terraform.policies"
