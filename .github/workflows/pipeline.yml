@@ -1,0 +1,47 @@
+name: Terraform CI
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  lint-and-security:
+    name: Calidad y Seguridad
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      # TFLint (Análisis estático)
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v3
+
+      - name: Init TFLint
+        run: tflint --init
+
+      - name: Run TFLint
+        run: |
+          cd terraform
+          tflint
+
+      # Checkov (Análisis de seguridad)
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: terraform/
+          framework: terraform
+          soft_fail: true
+
+      # Terraform Validate
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init -backend=false
+        working-directory: ./terraform
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: ./terraform
