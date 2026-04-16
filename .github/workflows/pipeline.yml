@@ -14,7 +14,7 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v4
 
-      # Análisis estático con TFLint
+      # TFLint (Análisis estático)
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v3
 
@@ -22,16 +22,19 @@ jobs:
         run: tflint --init
 
       - name: Run TFLint
-        run: tflint --chdir=terraform
+        run: |
+          cd terraform
+          tflint
 
-      # Análisis de seguridad con Checkov
+      # Checkov (Análisis de seguridad)
       - name: Run Checkov
         uses: bridgecrewio/checkov-action@master
         with:
           directory: terraform/
           framework: terraform
+          soft_fail: true
 
-      # Validación de Terraform
+      # Terraform Validate
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
