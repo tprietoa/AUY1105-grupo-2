@@ -45,8 +45,8 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
         working-directory: ./terraform
-        
-     # Generar Plan en formato JSON para OPA
+
+      #  Generar Plan en formato JSON para OPA
       - name: Terraform Plan
         run: |
           terraform plan -out=tfplan
@@ -63,5 +63,3 @@ jobs:
       - name: Run OPA Check
         run: |
           opa eval -i terraform/tfplan.json -d opa/policies.rego "data.terraform.policies"
-
-          
